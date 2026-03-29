@@ -38,14 +38,20 @@
  * The above values will be the same _even if_ different values for `ENVIRONMENT` or `PUBLIC_BASE_URL` are set at runtime, as they are statically replaced in your code with their build time values.
  */
 declare module '$env/static/private' {
+	export const SMTP_HOST: string;
+	export const SMTP_PORT: string;
+	export const SMTP_USER: string;
+	export const SMTP_PASS: string;
+	export const SMTP_FROM: string;
 	export const SHELL: string;
+	export const npm_command: string;
 	export const LESSHISTFILE: string;
 	export const GHOSTTY_BIN_DIR: string;
 	export const RUBY_CONFIGURE_OPTS: string;
 	export const COLORTERM: string;
 	export const XPC_FLAGS: string;
 	export const TERM_PROGRAM_VERSION: string;
-	export const JOBS: string;
+	export const TMUX: string;
 	export const NODE: string;
 	export const __CFBundleIdentifier: string;
 	export const JAVA_HOME: string;
@@ -55,6 +61,7 @@ declare module '$env/static/private' {
 	export const GEMINI_API_KEY: string;
 	export const XDG_CONFIG_HOME: string;
 	export const TLDR_CACHE_DIR: string;
+	export const TMUX_PLUGIN_MANAGER_PATH: string;
 	export const OSLogRateLimit: string;
 	export const ANDROID_SDK_HOME: string;
 	export const npm_config_local_prefix: string;
@@ -64,7 +71,6 @@ declare module '$env/static/private' {
 	export const PWD: string;
 	export const LOGNAME: string;
 	export const MANPATH: string;
-	export const BUN_WHICH_IGNORE_CWD: string;
 	export const LaunchInstanceID: string;
 	export const _: string;
 	export const XAUTHORITY: string;
@@ -81,11 +87,11 @@ declare module '$env/static/private' {
 	export const STARSHIP_CONFIG: string;
 	export const __MISE_DIFF: string;
 	export const TMPDIR: string;
-	export const INIT_CWD: string;
 	export const __MISE_SHIM: string;
 	export const STARSHIP_SESSION_KEY: string;
 	export const __MISE_ORIG_PATH: string;
 	export const XDG_CACHE_HOME: string;
+	export const npm_lifecycle_script: string;
 	export const CONTEXT7_API_KEY: string;
 	export const W3M_DIR: string;
 	export const GRADLE_USER_HOME: string;
@@ -97,7 +103,9 @@ declare module '$env/static/private' {
 	export const npm_package_name: string;
 	export const ZDOTDIR: string;
 	export const USER: string;
+	export const TMUX_PANE: string;
 	export const __MISE_SESSION: string;
+	export const npm_lifecycle_event: string;
 	export const SHLVL: string;
 	export const INPUTRC: string;
 	export const TASKRC: string;
@@ -112,10 +120,12 @@ declare module '$env/static/private' {
 	export const PATH: string;
 	export const HISTIGNORE: string;
 	export const OPENCODE_API_KEY: string;
+	export const tmux_version: string;
 	export const npm_node_execpath: string;
 	export const OLDPWD: string;
 	export const __CF_USER_TEXT_ENCODING: string;
 	export const TERM_PROGRAM: string;
+	export const NODE_ENV: string;
 }
 
 /**
@@ -202,14 +212,20 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
+		SMTP_HOST: string;
+		SMTP_PORT: string;
+		SMTP_USER: string;
+		SMTP_PASS: string;
+		SMTP_FROM: string;
 		SHELL: string;
+		npm_command: string;
 		LESSHISTFILE: string;
 		GHOSTTY_BIN_DIR: string;
 		RUBY_CONFIGURE_OPTS: string;
 		COLORTERM: string;
 		XPC_FLAGS: string;
 		TERM_PROGRAM_VERSION: string;
-		JOBS: string;
+		TMUX: string;
 		NODE: string;
 		__CFBundleIdentifier: string;
 		JAVA_HOME: string;
@@ -219,6 +235,7 @@ declare module '$env/dynamic/private' {
 		GEMINI_API_KEY: string;
 		XDG_CONFIG_HOME: string;
 		TLDR_CACHE_DIR: string;
+		TMUX_PLUGIN_MANAGER_PATH: string;
 		OSLogRateLimit: string;
 		ANDROID_SDK_HOME: string;
 		npm_config_local_prefix: string;
@@ -228,7 +245,6 @@ declare module '$env/dynamic/private' {
 		PWD: string;
 		LOGNAME: string;
 		MANPATH: string;
-		BUN_WHICH_IGNORE_CWD: string;
 		LaunchInstanceID: string;
 		_: string;
 		XAUTHORITY: string;
@@ -245,11 +261,11 @@ declare module '$env/dynamic/private' {
 		STARSHIP_CONFIG: string;
 		__MISE_DIFF: string;
 		TMPDIR: string;
-		INIT_CWD: string;
 		__MISE_SHIM: string;
 		STARSHIP_SESSION_KEY: string;
 		__MISE_ORIG_PATH: string;
 		XDG_CACHE_HOME: string;
+		npm_lifecycle_script: string;
 		CONTEXT7_API_KEY: string;
 		W3M_DIR: string;
 		GRADLE_USER_HOME: string;
@@ -261,7 +277,9 @@ declare module '$env/dynamic/private' {
 		npm_package_name: string;
 		ZDOTDIR: string;
 		USER: string;
+		TMUX_PANE: string;
 		__MISE_SESSION: string;
+		npm_lifecycle_event: string;
 		SHLVL: string;
 		INPUTRC: string;
 		TASKRC: string;
@@ -276,10 +294,12 @@ declare module '$env/dynamic/private' {
 		PATH: string;
 		HISTIGNORE: string;
 		OPENCODE_API_KEY: string;
+		tmux_version: string;
 		npm_node_execpath: string;
 		OLDPWD: string;
 		__CF_USER_TEXT_ENCODING: string;
 		TERM_PROGRAM: string;
+		NODE_ENV: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
 	}

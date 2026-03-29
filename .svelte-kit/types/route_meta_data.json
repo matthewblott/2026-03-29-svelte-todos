@@ -1,3 +1,18 @@
 {
-	"/": []
+	"/": [],
+	"/[tenant]": [
+		"src/routes/[tenant]/+layout.server.ts"
+	],
+	"/[tenant]/auth/login": [
+		"src/routes/[tenant]/auth/login/+page.server.ts",
+		"src/routes/[tenant]/+layout.server.ts"
+	],
+	"/[tenant]/auth/verify": [
+		"src/routes/[tenant]/auth/verify/+page.server.ts",
+		"src/routes/[tenant]/+layout.server.ts"
+	],
+	"/[tenant]/todos": [
+		"src/routes/[tenant]/todos/+page.server.ts",
+		"src/routes/[tenant]/+layout.server.ts"
+	]
 }
