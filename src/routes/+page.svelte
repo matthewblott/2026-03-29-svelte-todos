@@ -1,2 +1,14 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<!-- src/routes/+page.svelte -->
+<main>
+  <h1>Todos</h1>
+  <p>What would you like to do?</p>
+
+  <nav>
+    <a href="/auth/login">Sign in</a>
+    <a href="/auth/register">Create account</a>
+
+    <form method="POST" action="/auth/guest">
+      <button type="submit">Continue as guest</button>
+    </form>
+  </nav>
+</main>

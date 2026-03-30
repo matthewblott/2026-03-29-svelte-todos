@@ -1,6 +1,7 @@
+// src/lib/schemas/auth.ts
 import * as v from 'valibot';
 
-export const LoginSchema = v.object({
+export const EmailSchema = v.object({
   email: v.pipe(v.string(), v.email('Please enter a valid email address')),
 });
 
@@ -13,5 +14,5 @@ export const VerifySchema = v.object({
   ),
 });
 
-export type LoginInput  = v.InferInput<typeof LoginSchema>;
+export type EmailInput  = v.InferInput<typeof EmailSchema>;
 export type VerifyInput = v.InferInput<typeof VerifySchema>;

@@ -1,14 +1,16 @@
+// src/app.d.ts
 import type { InferSelectModel } from 'drizzle-orm';
-import type { tenants, users, sessions } from '$lib/db/schema';
+import type { users, sessions } from '$lib/db/shared-schema';
+import type { getUserDb } from '$lib/db/app';
 
 declare global {
-	namespace App {
+  namespace App {
     interface Locals {
-      tenant?:  InferSelectModel<typeof tenants>;
-      user?:    InferSelectModel<typeof users>;
+      user?:   InferSelectModel<typeof users>;
       session?: InferSelectModel<typeof sessions>;
+      userDb?: ReturnType<typeof getUserDb>;
     }
-	}
+  }
 }
 
 export {};

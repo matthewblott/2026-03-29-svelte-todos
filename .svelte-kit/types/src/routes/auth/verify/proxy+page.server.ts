@@ -1,19 +1,24 @@
 // @ts-nocheck
+// src/routes/auth/verify/+page.server.ts
 import type { Actions, PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { safeParse } from 'valibot';
 import { VerifySchema } from '$lib/schemas/auth';
 import { flattenErrors } from '$lib/utils/validation';
-import { verifyOtp, createSession } from '$lib/auth/session';
+import { verifyOtp, createAccount, loginUser } from '$lib/auth/session';
 
-export const load = async ({ url, locals }: Parameters<PageServerLoad>[0]) => {
-  if (locals.user) redirect(302, `/${locals.tenant?.slug}/todos`);
-  return { email: url.searchParams.get('email') ?? '' };
+export const load = async ({ locals, url }: Parameters<PageServerLoad>[0]) => {
+  if (locals.user) redirect(302, '/todos');
+  return {
+    email: url.searchParams.get('email') ?? '',
+    type:  url.searchParams.get('type') === 'register' ? 'register' : 'login',
+  };
 };
 
 export const actions = {
-  default: async ({ request, locals, cookies }: import('./$types').RequestEvent) => {
+  default: async ({ request, cookies }: import('./$types').RequestEvent) => {
     const data   = Object.fromEntries(await request.formData());
+    const type   = data.type === 'register' ? 'register' : 'login';
     const result = safeParse(VerifySchema, data);
 
     if (!result.success) {
@@ -21,14 +26,19 @@ export const actions = {
     }
 
     const { email, code } = result.output;
-    const tenant          = locals.tenant!;
-    const valid           = await verifyOtp(email, tenant.id, code);
+    const valid           = await verifyOtp(email, code, type);
 
     if (!valid) {
       return fail(400, { errors: { code: 'Invalid or expired code.' }, values: data });
     }
 
-    const token = await createSession(email, tenant.id);
+    const token = type === 'register'
+      ? await createAccount(email)
+      : await loginUser(email);
+
+    if (!token) {
+      return fail(400, { errors: { code: 'Something went wrong. Please try again.' }, values: data });
+    }
 
     cookies.set('session', token, {
       httpOnly: true,
@@ -37,7 +47,7 @@ export const actions = {
       maxAge:   60 * 60 * 24 * 30,
     });
 
-    redirect(302, `/${tenant.slug}/todos`);
+    redirect(302, '/todos');
   },
 };
 ;null as any as Actions;
