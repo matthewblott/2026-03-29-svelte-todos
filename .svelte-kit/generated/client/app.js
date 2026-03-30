@@ -8,18 +8,20 @@ export const nodes = [
 	() => import('./nodes/4'),
 	() => import('./nodes/5'),
 	() => import('./nodes/6'),
-	() => import('./nodes/7')
+	() => import('./nodes/7'),
+	() => import('./nodes/8'),
+	() => import('./nodes/9')
 ];
 
-export const server_loads = [0];
+export const server_loads = [0,3,2];
 
 export const dictionary = {
-		"/": [2],
-		"/auth/guest": [~3],
-		"/auth/login": [~4],
-		"/auth/register": [~5],
-		"/auth/verify": [~6],
-		"/todos": [~7]
+		"/(public)": [~6,[3]],
+		"/(public)/auth/login": [~7,[3]],
+		"/(public)/auth/register": [~8,[3]],
+		"/(public)/auth/verify": [~9,[3]],
+		"/(app)/[tenant]/settings": [~4,[2]],
+		"/(app)/[tenant]/todos": [~5,[2]]
 	};
 
 export const hooks = {

@@ -29,20 +29,25 @@ declare module "$app/types" {
 	type MatcherParam<M> = M extends (param : string) => param is (infer U extends string) ? U : string;
 
 	export interface AppTypes {
-		RouteId(): "/" | "/auth" | "/auth/guest" | "/auth/login" | "/auth/register" | "/auth/verify" | "/todos";
+		RouteId(): "/(public)" | "/(app)" | "/" | "/(public)/auth" | "/(public)/auth/login" | "/(public)/auth/register" | "/(public)/auth/verify" | "/(app)/[tenant]" | "/(app)/[tenant]/settings" | "/(app)/[tenant]/todos";
 		RouteParams(): {
-			
+			"/(app)/[tenant]": { tenant: string };
+			"/(app)/[tenant]/settings": { tenant: string };
+			"/(app)/[tenant]/todos": { tenant: string }
 		};
 		LayoutParams(): {
-			"/": Record<string, never>;
-			"/auth": Record<string, never>;
-			"/auth/guest": Record<string, never>;
-			"/auth/login": Record<string, never>;
-			"/auth/register": Record<string, never>;
-			"/auth/verify": Record<string, never>;
-			"/todos": Record<string, never>
+			"/(public)": Record<string, never>;
+			"/(app)": { tenant?: string };
+			"/": { tenant?: string };
+			"/(public)/auth": Record<string, never>;
+			"/(public)/auth/login": Record<string, never>;
+			"/(public)/auth/register": Record<string, never>;
+			"/(public)/auth/verify": Record<string, never>;
+			"/(app)/[tenant]": { tenant: string };
+			"/(app)/[tenant]/settings": { tenant: string };
+			"/(app)/[tenant]/todos": { tenant: string }
 		};
-		Pathname(): "/" | "/auth/guest" | "/auth/login" | "/auth/register" | "/auth/verify" | "/todos";
+		Pathname(): "/" | "/auth/login" | "/auth/register" | "/auth/verify" | `/${string}/settings` & {} | `/${string}/todos` & {};
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): "/robots.txt" | string & {};
 	}

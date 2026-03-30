@@ -1,5 +1,6 @@
-import { db } from '$lib/db';
-import { jobs } from '$lib/db/schema';
+// src/lib/jobs/worker.ts
+import { sharedDb } from '$lib/db/shared';
+import { jobs } from '$lib/db/shared-schema';
 import { eq, lte, and } from 'drizzle-orm';
 import { sendEmailHandler } from './handlers/send-email';
 
@@ -10,13 +11,13 @@ const handlers: Record<string, JobHandler> = {
 };
 
 async function processJobs(): Promise<void> {
-  const pending = await db.query.jobs.findMany({
+  const pending = await sharedDb.query.jobs.findMany({
     where: and(eq(jobs.status, 'pending'), lte(jobs.runAt, new Date())),
     limit: 10,
   });
 
   for (const job of pending) {
-    await db.update(jobs)
+    await sharedDb.update(jobs)
       .set({ status: 'processing', attempts: job.attempts + 1 })
       .where(eq(jobs.id, job.id));
 
@@ -24,10 +25,10 @@ async function processJobs(): Promise<void> {
       const handler = handlers[job.type];
       if (!handler) throw new Error(`No handler for job type: ${job.type}`);
       await handler(job.payload);
-      await db.update(jobs).set({ status: 'done' }).where(eq(jobs.id, job.id));
+      await sharedDb.update(jobs).set({ status: 'done' }).where(eq(jobs.id, job.id));
     } catch (err) {
       console.error(`Job ${job.id} (${job.type}) failed:`, err);
-      await db.update(jobs).set({ status: 'failed' }).where(eq(jobs.id, job.id));
+      await sharedDb.update(jobs).set({ status: 'failed' }).where(eq(jobs.id, job.id));
     }
   }
 }

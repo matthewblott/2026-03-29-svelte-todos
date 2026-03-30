@@ -10,12 +10,15 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"db:push": "drizzle-kit push",
-		"db:generate": "drizzle-kit generate",
-		"db:migrate": "drizzle-kit migrate",
-		"db:studio": "drizzle-kit studio",
-    "db:seed":  "tsx scripts/seed.ts",
-    "db:reset": "rm -f todos.db && npm run db:push && npm run db:seed"
+    "db:generate":        "drizzle-kit generate --config=drizzle.shared.config.ts && drizzle-kit generate --config=drizzle.app.config.ts",
+    "db:push:shared":     "drizzle-kit push --config=drizzle.shared.config.ts",
+    "db:push:app":        "drizzle-kit push --config=drizzle.app.config.ts",
+    "db:push":            "bun run db:push:shared && bun run db:push:app",
+    "db:migrate:shared":  "drizzle-kit migrate --config=drizzle.shared.config.ts",
+    "db:studio:shared":   "drizzle-kit studio --config=drizzle.shared.config.ts",
+    "db:studio:app":      "drizzle-kit studio --config=drizzle.app.config.ts",
+    "db:seed":            "tsx scripts/seed.ts",
+    "db:reset":           "rm -f storage/shared.db storage/template.db storage/data/*.db && bun run db:push && bun run db:seed"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^7.0.0",

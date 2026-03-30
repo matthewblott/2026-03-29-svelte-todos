@@ -3,6 +3,7 @@ import { randomBytes, createHash } from 'node:crypto';
 import { sharedDb } from '$lib/db/shared';
 import { sessions, otpRequests, users } from '$lib/db/shared-schema';
 import { getUserDb } from '$lib/db/app';
+import { deriveUsername, uniqueUsername, guestUsername } from '$lib/utils/username';
 import { eq, and, gt } from 'drizzle-orm';
 
 const OTP_EXPIRY_MS       = 10 * 60 * 1000;
@@ -18,13 +19,15 @@ export function generateOtp(): string {
 
 export async function createOtpRequest(
   email: string,
-  type: 'login' | 'register',
+  type: 'login' | 'register' | 'upgrade',
 ): Promise<string> {
   const code      = generateOtp();
   const codeHash  = hashCode(code);
   const expiresAt = new Date(Date.now() + OTP_EXPIRY_MS);
 
-  await sharedDb.delete(otpRequests).where(eq(otpRequests.email, email));
+  await sharedDb.delete(otpRequests).where(
+    and(eq(otpRequests.email, email), eq(otpRequests.type, type))
+  );
   await sharedDb.insert(otpRequests).values({ email, type, codeHash, expiresAt });
 
   return code;
@@ -33,7 +36,7 @@ export async function createOtpRequest(
 export async function verifyOtp(
   email: string,
   code: string,
-  type: 'login' | 'register',
+  type: 'login' | 'register' | 'upgrade',
 ): Promise<boolean> {
   const codeHash = hashCode(code);
 
@@ -59,33 +62,49 @@ async function mintSession(userId: number): Promise<string> {
   return token;
 }
 
-export async function createAccount(email: string): Promise<string> {
-  const [user] = await sharedDb.insert(users).values({ email }).returning();
-  getUserDb(user.id); // provision the database immediately
-  return mintSession(user.id);
+export async function createAccount(email: string): Promise<{ token: string; username: string }> {
+  const base     = deriveUsername(email);
+  const username = await uniqueUsername(base);
+  const [user]   = await sharedDb.insert(users).values({ email, username }).returning();
+  getUserDb(user.id);
+  const token = await mintSession(user.id);
+  return { token, username };
 }
 
-export async function loginUser(email: string): Promise<string | null> {
-  const user = await sharedDb.query.users.findFirst({
-    where: eq(users.email, email),
-  });
+export async function loginUser(email: string): Promise<{ token: string; username: string } | null> {
+  const user = await sharedDb.query.users.findFirst({ where: eq(users.email, email) });
   if (!user) return null;
-  return mintSession(user.id);
+  const token = await mintSession(user.id);
+  return { token, username: user.username };
 }
 
-export async function createGuestAccount(deviceToken: string): Promise<string> {
+export async function createGuestAccount(deviceToken: string): Promise<{ token: string; username: string }> {
   let user = await sharedDb.query.users.findFirst({
     where: eq(users.deviceToken, deviceToken),
   });
 
   if (!user) {
+    const username = await uniqueUsername(guestUsername());
     [user] = await sharedDb.insert(users)
-      .values({ isGuest: true, deviceToken })
+      .values({ isGuest: true, deviceToken, username })
       .returning();
-    getUserDb(user.id); // provision the database immediately
+    getUserDb(user.id);
   }
 
-  return mintSession(user.id);
+  const token = await mintSession(user.id);
+  return { token, username: user.username };
+}
+
+export async function upgradeGuestAccount(
+  userId: number,
+  email: string,
+): Promise<void> {
+  const base     = deriveUsername(email);
+  const username = await uniqueUsername(base);
+
+  await sharedDb.update(users)
+    .set({ email, username, isGuest: false, deviceToken: null })
+    .where(eq(users.id, userId));
 }
 
 export async function deleteSession(token: string): Promise<void> {

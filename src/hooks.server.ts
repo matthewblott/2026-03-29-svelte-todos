@@ -1,14 +1,26 @@
 // src/hooks.server.ts
 import type { Handle } from '@sveltejs/kit';
 import { sharedDb } from '$lib/db/shared';
-import { sessions } from '$lib/db/shared-schema';
+import { users, sessions } from '$lib/db/shared-schema';
 import { getUserDb } from '$lib/db/app';
-import { eq, gt, and } from 'drizzle-orm';
+import { eq, and, gt } from 'drizzle-orm';
 import { startWorker } from '$lib/jobs/worker';
 
 startWorker();
 
 export const handle: Handle = async ({ event, resolve }) => {
+  // Resolve tenant (username) from URL if present
+  const username = event.params.tenant;
+
+  if (username) {
+    const user = await sharedDb.query.users.findFirst({
+      where: eq(users.username, username),
+    });
+    if (!user) return new Response('Not found', { status: 404 });
+    event.locals.tenant = user;
+  }
+
+  // Resolve session
   const token = event.cookies.get('session');
 
   if (token) {
@@ -18,9 +30,8 @@ export const handle: Handle = async ({ event, resolve }) => {
     });
 
     if (session) {
-      event.locals.user    = session.user;
-      event.locals.session = session;
-      event.locals.userDb  = getUserDb(session.user.id);
+      event.locals.user   = session.user;
+      event.locals.userDb = getUserDb(session.user.id);
     }
   }
 

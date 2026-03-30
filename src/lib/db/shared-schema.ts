@@ -4,6 +4,7 @@ import { relations } from 'drizzle-orm';
 
 export const users = sqliteTable('users', {
   id:          integer('id').primaryKey({ autoIncrement: true }),
+  username:    text('username').notNull().unique(),
   email:       text('email').unique(),
   deviceToken: text('device_token').unique(),
   isGuest:     integer('is_guest', { mode: 'boolean' }).notNull().default(false),
@@ -21,9 +22,18 @@ export const sessions = sqliteTable('sessions', {
 export const otpRequests = sqliteTable('otp_requests', {
   id:        integer('id').primaryKey({ autoIncrement: true }),
   email:     text('email').notNull(),
-  type:      text('type', { enum: ['login', 'register'] }).notNull().default('login'),
+  type:      text('type', { enum: ['login', 'register', 'upgrade'] }).notNull().default('login'),
   codeHash:  text('code_hash').notNull(),
   expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+});
+export const jobs = sqliteTable('jobs', {
+  id:        integer('id').primaryKey({ autoIncrement: true }),
+  type:      text('type').notNull(),
+  payload:   text('payload', { mode: 'json' }).$type<Record<string, unknown>>().notNull(),
+  status:    text('status', { enum: ['pending', 'processing', 'done', 'failed'] }).notNull().default('pending'),
+  runAt:     integer('run_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  attempts:  integer('attempts').notNull().default(0),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
 

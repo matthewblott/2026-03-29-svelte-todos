@@ -1,26 +1,41 @@
 {
-	"/": [
+	"/(public)": [
+		"src/routes/(public)/+page.server.ts",
+		"src/routes/(public)/+layout.server.ts",
 		"src/routes/+layout.server.ts",
+		"src/routes/(public)/+layout.server.ts",
 		"src/routes/+layout.server.ts"
 	],
-	"/auth/guest": [
-		"src/routes/auth/guest/+page.server.ts",
+	"/": [
 		"src/routes/+layout.server.ts"
 	],
-	"/auth/login": [
-		"src/routes/auth/login/+page.server.ts",
+	"/(public)/auth/login": [
+		"src/routes/(public)/auth/login/+page.server.ts",
+		"src/routes/(public)/+layout.server.ts",
 		"src/routes/+layout.server.ts"
 	],
-	"/auth/register": [
-		"src/routes/auth/register/+page.server.ts",
+	"/(public)/auth/register": [
+		"src/routes/(public)/auth/register/+page.server.ts",
+		"src/routes/(public)/+layout.server.ts",
 		"src/routes/+layout.server.ts"
 	],
-	"/auth/verify": [
-		"src/routes/auth/verify/+page.server.ts",
+	"/(public)/auth/verify": [
+		"src/routes/(public)/auth/verify/+page.server.ts",
+		"src/routes/(public)/+layout.server.ts",
 		"src/routes/+layout.server.ts"
 	],
-	"/todos": [
-		"src/routes/todos/+page.server.ts",
+	"/(app)/[tenant]": [
+		"src/routes/(app)/[tenant]/+layout.server.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/(app)/[tenant]/settings": [
+		"src/routes/(app)/[tenant]/settings/+page.server.ts",
+		"src/routes/(app)/[tenant]/+layout.server.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/(app)/[tenant]/todos": [
+		"src/routes/(app)/[tenant]/todos/+page.server.ts",
+		"src/routes/(app)/[tenant]/+layout.server.ts",
 		"src/routes/+layout.server.ts"
 	]
 }
