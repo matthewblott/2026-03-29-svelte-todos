@@ -1,4 +1,3 @@
-// src/routes/auth/register/+page.server.ts
 import type { Actions, PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { safeParse } from 'valibot';
@@ -12,7 +11,7 @@ import { enqueue } from '$lib/jobs/enqueue';
 import { otpTemplate } from '$lib/email/templates/otp';
 
 export const load: PageServerLoad = async ({ locals }) => {
-  if (locals.user) redirect(302, '/todos');
+  if (locals.user && !locals.user.isGuest) redirect(302, `/${locals.user.username}/todos`);
   return {};
 };
 

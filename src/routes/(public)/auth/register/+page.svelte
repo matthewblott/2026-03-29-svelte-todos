@@ -1,4 +1,3 @@
-<!-- src/routes/auth/register/+page.svelte -->
 <script lang="ts">
   import { safeParse } from 'valibot';
   import { EmailSchema } from '$lib/schemas/auth';
@@ -6,12 +5,16 @@
 
   let { form } = $props();
 
-  let email  = $state(String(form?.values?.email ?? ''));
-  let errors = $state<Record<string, string>>(form?.errors ?? {});
+  let email      = $state('');
+  let submitted  = $state(false);
+  let formErrors = $derived<Record<string, string>>(form?.errors ?? {});
+
+  let clientErrors = $state<Record<string, string>>({});
+  let errors       = $derived({ ...formErrors, ...clientErrors });
 
   function validate() {
-    const result = safeParse(EmailSchema, { email });
-    errors = result.success ? {} : flattenErrors(result.issues);
+    const result  = safeParse(EmailSchema, { email });
+    clientErrors  = result.success ? {} : flattenErrors(result.issues);
     return result.success;
   }
 </script>

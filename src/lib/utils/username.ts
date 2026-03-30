@@ -1,4 +1,3 @@
-// src/lib/utils/username.ts
 import { sharedDb } from '$lib/db/shared';
 import { users } from '$lib/db/shared-schema';
 import { eq } from 'drizzle-orm';
@@ -23,6 +22,5 @@ export async function uniqueUsername(base: string): Promise<string> {
 }
 
 export function guestUsername(): string {
-  const suffix = randomBytes(4).toString('hex'); // e.g. "guest_a3f7c2b1"
-  return `guest_${suffix}`;
+  return randomBytes(4).toString('hex'); // e.g. "a3f7c2b1"
 }

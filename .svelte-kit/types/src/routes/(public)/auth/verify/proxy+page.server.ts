@@ -1,14 +1,13 @@
 // @ts-nocheck
-// src/routes/auth/verify/+page.server.ts
 import type { Actions, PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { safeParse } from 'valibot';
 import { VerifySchema } from '$lib/schemas/auth';
 import { flattenErrors } from '$lib/utils/validation';
-import { verifyOtp, createAccount, loginUser } from '$lib/auth/session';
+import { verifyOtp, createAccount, loginUser, deleteSession } from '$lib/auth/session';
 
 export const load = async ({ locals, url }: Parameters<PageServerLoad>[0]) => {
-  if (locals.user) redirect(302, '/todos');
+  if (locals.user && !locals.user.isGuest) redirect(302, `/${locals.user.username}/todos`);
   return {
     email: url.searchParams.get('email') ?? '',
     type:  url.searchParams.get('type') === 'register' ? 'register' : 'login',
@@ -32,22 +31,26 @@ export const actions = {
       return fail(400, { errors: { code: 'Invalid or expired code.' }, values: data });
     }
 
-    const result2 = type === 'register'
+    const outcome = type === 'register'
       ? await createAccount(email)
       : await loginUser(email);
 
-    if (!result2) {
+    if (!outcome) {
       return fail(400, { errors: { code: 'Something went wrong. Please try again.' }, values: data });
     }
 
-    cookies.set('session', result2.token, {
+    // Clear any existing guest session before setting the new one
+    const existingToken = cookies.get('session');
+    if (existingToken) await deleteSession(existingToken);
+
+    cookies.set('session', outcome.token, {
       httpOnly: true,
       sameSite: 'lax',
       path:     '/',
       maxAge:   60 * 60 * 24 * 30,
     });
 
-    redirect(302, `/${result2.username}/todos`);
+    redirect(302, `/${outcome.username}/todos`);
   },
 };
 ;null as any as Actions;

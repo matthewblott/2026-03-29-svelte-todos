@@ -20,8 +20,8 @@ export const dictionary = {
 		"/(public)/auth/login": [~7,[3]],
 		"/(public)/auth/register": [~8,[3]],
 		"/(public)/auth/verify": [~9,[3]],
-		"/(app)/[tenant]/settings": [~4,[2]],
-		"/(app)/[tenant]/todos": [~5,[2]]
+		"/(app)/[tenant=username]/settings": [~4,[2]],
+		"/(app)/[tenant=username]/todos": [~5,[2]]
 	};
 
 export const hooks = {

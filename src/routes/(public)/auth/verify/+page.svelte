@@ -1,4 +1,3 @@
-<!-- src/routes/auth/verify/+page.svelte -->
 <script lang="ts">
   import { safeParse } from 'valibot';
   import { VerifySchema } from '$lib/schemas/auth';

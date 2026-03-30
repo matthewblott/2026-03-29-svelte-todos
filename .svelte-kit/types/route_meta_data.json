@@ -24,18 +24,18 @@
 		"src/routes/(public)/+layout.server.ts",
 		"src/routes/+layout.server.ts"
 	],
-	"/(app)/[tenant]": [
-		"src/routes/(app)/[tenant]/+layout.server.ts",
+	"/(app)/[tenant=username]": [
+		"src/routes/(app)/[tenant=username]/+layout.server.ts",
 		"src/routes/+layout.server.ts"
 	],
-	"/(app)/[tenant]/settings": [
-		"src/routes/(app)/[tenant]/settings/+page.server.ts",
-		"src/routes/(app)/[tenant]/+layout.server.ts",
+	"/(app)/[tenant=username]/settings": [
+		"src/routes/(app)/[tenant=username]/settings/+page.server.ts",
+		"src/routes/(app)/[tenant=username]/+layout.server.ts",
 		"src/routes/+layout.server.ts"
 	],
-	"/(app)/[tenant]/todos": [
-		"src/routes/(app)/[tenant]/todos/+page.server.ts",
-		"src/routes/(app)/[tenant]/+layout.server.ts",
+	"/(app)/[tenant=username]/todos": [
+		"src/routes/(app)/[tenant=username]/todos/+page.server.ts",
+		"src/routes/(app)/[tenant=username]/+layout.server.ts",
 		"src/routes/+layout.server.ts"
 	]
 }

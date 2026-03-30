@@ -29,23 +29,23 @@ declare module "$app/types" {
 	type MatcherParam<M> = M extends (param : string) => param is (infer U extends string) ? U : string;
 
 	export interface AppTypes {
-		RouteId(): "/(public)" | "/(app)" | "/" | "/(public)/auth" | "/(public)/auth/login" | "/(public)/auth/register" | "/(public)/auth/verify" | "/(app)/[tenant]" | "/(app)/[tenant]/settings" | "/(app)/[tenant]/todos";
+		RouteId(): "/(public)" | "/(app)" | "/" | "/(public)/auth" | "/(public)/auth/login" | "/(public)/auth/register" | "/(public)/auth/verify" | "/(app)/[tenant=username]" | "/(app)/[tenant=username]/settings" | "/(app)/[tenant=username]/todos";
 		RouteParams(): {
-			"/(app)/[tenant]": { tenant: string };
-			"/(app)/[tenant]/settings": { tenant: string };
-			"/(app)/[tenant]/todos": { tenant: string }
+			"/(app)/[tenant=username]": { tenant: MatcherParam<typeof import('../src/params/username.js').match> };
+			"/(app)/[tenant=username]/settings": { tenant: MatcherParam<typeof import('../src/params/username.js').match> };
+			"/(app)/[tenant=username]/todos": { tenant: MatcherParam<typeof import('../src/params/username.js').match> }
 		};
 		LayoutParams(): {
 			"/(public)": Record<string, never>;
-			"/(app)": { tenant?: string };
-			"/": { tenant?: string };
+			"/(app)": { tenant?: MatcherParam<typeof import('../src/params/username.js').match> };
+			"/": { tenant?: MatcherParam<typeof import('../src/params/username.js').match> };
 			"/(public)/auth": Record<string, never>;
 			"/(public)/auth/login": Record<string, never>;
 			"/(public)/auth/register": Record<string, never>;
 			"/(public)/auth/verify": Record<string, never>;
-			"/(app)/[tenant]": { tenant: string };
-			"/(app)/[tenant]/settings": { tenant: string };
-			"/(app)/[tenant]/todos": { tenant: string }
+			"/(app)/[tenant=username]": { tenant: MatcherParam<typeof import('../src/params/username.js').match> };
+			"/(app)/[tenant=username]/settings": { tenant: MatcherParam<typeof import('../src/params/username.js').match> };
+			"/(app)/[tenant=username]/todos": { tenant: MatcherParam<typeof import('../src/params/username.js').match> }
 		};
 		Pathname(): "/" | "/auth/login" | "/auth/register" | "/auth/verify" | `/${string}/settings` & {} | `/${string}/todos` & {};
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;

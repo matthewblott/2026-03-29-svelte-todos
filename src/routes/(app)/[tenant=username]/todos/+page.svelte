@@ -1,4 +1,3 @@
-<!-- src/routes/todos/+page.svelte -->
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { safeParse } from 'valibot';
@@ -7,12 +6,13 @@
 
   let { data, form } = $props();
 
-  let title  = $state(String(form?.values?.title ?? ''));
-  let errors = $state<Record<string, string>>(form?.errors ?? {});
+  let title        = $state('');
+  let clientErrors = $state<Record<string, string>>({});
+  let errors       = $derived({ ...(form?.errors ?? {}), ...clientErrors });
 
   function validate() {
     const result = safeParse(TodoSchema, { title });
-    errors = result.success ? {} : flattenErrors(result.issues);
+    clientErrors = result.success ? {} : flattenErrors(result.issues);
     return result.success;
   }
 </script>
