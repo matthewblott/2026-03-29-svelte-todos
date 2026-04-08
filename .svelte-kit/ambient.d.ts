@@ -63,11 +63,13 @@ declare module '$env/static/private' {
 	export const TLDR_CACHE_DIR: string;
 	export const TMUX_PLUGIN_MANAGER_PATH: string;
 	export const OSLogRateLimit: string;
+	export const OPENAI_API_KEY: string;
 	export const ANDROID_SDK_HOME: string;
 	export const npm_config_local_prefix: string;
 	export const REDISCLI_HISTFILE: string;
 	export const documents: string;
 	export const EDITOR: string;
+	export const OPENAI_BASE_URL: string;
 	export const PWD: string;
 	export const LOGNAME: string;
 	export const MANPATH: string;
@@ -80,6 +82,8 @@ declare module '$env/static/private' {
 	export const HOME: string;
 	export const LANG: string;
 	export const HISTFILE: string;
+	export const CARGO_HOME: string;
+	export const RUSTUP_TOOLCHAIN: string;
 	export const npm_package_version: string;
 	export const ERRFILE: string;
 	export const SECURITYSESSIONID: string;
@@ -101,6 +105,7 @@ declare module '$env/static/private' {
 	export const TERM: string;
 	export const TERMINFO: string;
 	export const npm_package_name: string;
+	export const RUSTUP_HOME: string;
 	export const ZDOTDIR: string;
 	export const USER: string;
 	export const TMUX_PANE: string;
@@ -121,6 +126,7 @@ declare module '$env/static/private' {
 	export const HISTIGNORE: string;
 	export const OPENCODE_API_KEY: string;
 	export const tmux_version: string;
+	export const OPENROUTER_API_KEY: string;
 	export const npm_node_execpath: string;
 	export const OLDPWD: string;
 	export const __CF_USER_TEXT_ENCODING: string;
@@ -237,11 +243,13 @@ declare module '$env/dynamic/private' {
 		TLDR_CACHE_DIR: string;
 		TMUX_PLUGIN_MANAGER_PATH: string;
 		OSLogRateLimit: string;
+		OPENAI_API_KEY: string;
 		ANDROID_SDK_HOME: string;
 		npm_config_local_prefix: string;
 		REDISCLI_HISTFILE: string;
 		documents: string;
 		EDITOR: string;
+		OPENAI_BASE_URL: string;
 		PWD: string;
 		LOGNAME: string;
 		MANPATH: string;
@@ -254,6 +262,8 @@ declare module '$env/dynamic/private' {
 		HOME: string;
 		LANG: string;
 		HISTFILE: string;
+		CARGO_HOME: string;
+		RUSTUP_TOOLCHAIN: string;
 		npm_package_version: string;
 		ERRFILE: string;
 		SECURITYSESSIONID: string;
@@ -275,6 +285,7 @@ declare module '$env/dynamic/private' {
 		TERM: string;
 		TERMINFO: string;
 		npm_package_name: string;
+		RUSTUP_HOME: string;
 		ZDOTDIR: string;
 		USER: string;
 		TMUX_PANE: string;
@@ -295,6 +306,7 @@ declare module '$env/dynamic/private' {
 		HISTIGNORE: string;
 		OPENCODE_API_KEY: string;
 		tmux_version: string;
+		OPENROUTER_API_KEY: string;
 		npm_node_execpath: string;
 		OLDPWD: string;
 		__CF_USER_TEXT_ENCODING: string;
