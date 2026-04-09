@@ -1,8 +1,8 @@
-// src/routes/[tenant]/settings/+page.server.ts
 import type { Actions, PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { safeParse } from 'valibot';
 import { EmailSchema } from '$lib/schemas/auth';
+import { VerifySchema } from '$lib/schemas/auth';
 import { flattenErrors } from '$lib/utils/validation';
 import { createOtpRequest, verifyOtp, upgradeGuestAccount } from '$lib/auth/session';
 import { sharedDb } from '$lib/db/shared';
@@ -17,7 +17,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions: Actions = {
-  // Step 1 — submit email, send OTP
   requestUpgrade: async ({ request, locals }) => {
     const data   = Object.fromEntries(await request.formData());
     const result = safeParse(EmailSchema, data);
@@ -28,7 +27,10 @@ export const actions: Actions = {
 
     const { email } = result.output;
 
-    const existing = await sharedDb.query.users.findFirst({ where: eq(users.email, email) });
+    const existing = await sharedDb.query.users.findFirst({
+      where: eq(users.email, email),
+    });
+
     if (existing) {
       return fail(400, {
         step:   'request',
@@ -48,13 +50,13 @@ export const actions: Actions = {
     return { step: 'verify', email };
   },
 
-  // Step 2 — verify OTP, upgrade account
   confirmUpgrade: async ({ request, locals, cookies }) => {
-    const data   = Object.fromEntries(await request.formData());
-    const email  = String(data.email);
-    const code   = String(data.code);
+    const data  = Object.fromEntries(await request.formData());
+    const email = String(data.email);
+    const code  = String(data.code);
 
     const valid = await verifyOtp(email, code, 'upgrade');
+
     if (!valid) {
       return fail(400, {
         step:   'verify',
@@ -65,7 +67,7 @@ export const actions: Actions = {
 
     await upgradeGuestAccount(locals.user!.id, email);
 
-    // Re-derive the new username from the session so we redirect correctly
+    // Fetch updated user to get the new username
     const updated = await sharedDb.query.users.findFirst({
       where: eq(users.id, locals.user!.id),
     });

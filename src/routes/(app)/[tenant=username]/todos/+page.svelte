@@ -20,7 +20,7 @@
 <header>
   <h1>Todos</h1>
   {#if data.user?.isGuest}
-    <p>Guest account — <a href="/auth/register">create an account</a> to keep your data.</p>
+    <p>Guest account — <a href="/{data.user.username}/settings">create an account</a> to keep your data.</p>
   {/if}
   <form method="POST" action="?/logout" use:enhance>
     <button type="submit">Sign out</button>

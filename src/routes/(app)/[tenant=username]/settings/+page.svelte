@@ -1,22 +1,21 @@
-<!-- src/routes/[tenant]/settings/+page.svelte -->
 <script lang="ts">
+  import { enhance } from '$app/forms';
+  import { page } from '$app/stores';
   import { safeParse } from 'valibot';
   import { EmailSchema } from '$lib/schemas/auth';
   import { flattenErrors } from '$lib/utils/validation';
-  import { enhance } from '$app/forms';
-  import { page } from '$app/stores';
 
   let { data, form } = $props();
 
-  let email  = $state(String(form?.values?.email ?? ''));
-  let errors = $state<Record<string, string>>(form?.errors ?? {});
-
-  // After step 1 succeeds the server returns { step: 'verify', email }
-  let step = $derived(form?.step ?? 'request');
+  let email        = $state('');
+  let clientErrors = $state<Record<string, string>>({});
+  let errors       = $derived({ ...(form?.errors ?? {}), ...clientErrors });
+  let step         = $derived(form?.step ?? 'request');
+  let verifyEmail  = $derived(form?.email ?? '');
 
   function validateEmail() {
     const result = safeParse(EmailSchema, { email });
-    errors = result.success ? {} : flattenErrors(result.issues);
+    clientErrors = result.success ? {} : flattenErrors(result.issues);
     return result.success;
   }
 </script>
@@ -30,19 +29,16 @@
 
     {#if data.user.isGuest}
       <h3>Add an email address</h3>
-      <p>
-        Adding an email lets you sign in from other devices and keeps your data
-        safe if you lose access to this one.
-      </p>
+      <p>Adding an email lets you sign in from other devices and keeps your data safe.</p>
 
       {#if $page.url.searchParams.get('upgraded')}
         <p role="status">Your account has been upgraded. Welcome!</p>
 
       {:else if step === 'verify'}
-        <p>Enter the 6-digit code sent to <strong>{form.email}</strong>.</p>
+        <p>Enter the 6-digit code sent to <strong>{verifyEmail}</strong>.</p>
 
         <form method="POST" action="?/confirmUpgrade" novalidate use:enhance>
-          <input type="hidden" name="email" value={form.email} />
+          <input type="hidden" name="email" value={verifyEmail} />
 
           <label for="code">Confirmation code</label>
           <input
@@ -89,4 +85,6 @@
       <p>Email: <strong>{data.user.email}</strong></p>
     {/if}
   </section>
+
+  <p><a href="/{data.user.username}/todos">Back to todos</a></p>
 </main>
