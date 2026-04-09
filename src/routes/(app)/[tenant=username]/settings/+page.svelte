@@ -8,28 +8,26 @@
 
   let { data, form } = $props();
 
-  // Email upgrade state
-  let email            = $state('');
-  let emailErrors      = $state<Record<string, string>>({});
-  let upgradeStep      = $derived(form?.step ?? 'request');
-  let verifyEmail      = $derived(form?.email ?? '');
+  // Username
+  let newUsername    = $state(data.user.username);
+  let usernameErrors = $state<Record<string, string>>({});
 
-  // Username change state
-  let newUsername      = $state(data.user.username);
-  let usernameErrors   = $state<Record<string, string>>({});
+  // Email change
+  let newEmail       = $state('');
+  let emailErrors    = $state<Record<string, string>>({});
 
-  // Merge server errors back in when the action matches
-  let activeErrors = $derived(
-    form?.action === 'changeUsername'
-      ? { ...(form?.errors ?? {}), ...usernameErrors }
-      : { ...(form?.errors ?? {}), ...emailErrors }
+  // Guest upgrade
+  let upgradeEmail   = $state('');
+  let upgradeErrors  = $state<Record<string, string>>({});
+
+  let editingUsername  = $derived($page.url.searchParams.get('edit') === 'username');
+  let editingEmail     = $derived(
+    $page.url.searchParams.get('edit') === 'email' || form?.action === 'changeEmail'
   );
 
-  function validateEmail() {
-    const result = safeParse(EmailSchema, { email });
-    emailErrors  = result.success ? {} : flattenErrors(result.issues);
-    return result.success;
-  }
+  let upgradeStep  = $derived(form?.action === 'upgrade'     ? (form?.step ?? 'request') : 'request');
+  let emailStep    = $derived(form?.action === 'changeEmail'  ? (form?.step ?? 'request') : 'request');
+  let verifyEmail  = $derived(form?.email ?? '');
 
   function validateUsername() {
     const result   = safeParse(UsernameSchema, { username: newUsername });
@@ -37,7 +35,19 @@
     return result.success;
   }
 
-  let editingUsername = $derived($page.url.searchParams.get('edit') === 'username');
+  function validateNewEmail() {
+    const result = safeParse(EmailSchema, { email: newEmail });
+    emailErrors  = result.success ? {} : flattenErrors(result.issues);
+    return result.success;
+  }
+
+  function validateUpgradeEmail() {
+    const result  = safeParse(EmailSchema, { email: upgradeEmail });
+    upgradeErrors = result.success ? {} : flattenErrors(result.issues);
+    return result.success;
+  }
+
+  let serverErrors = $derived(form?.errors ?? {});
 </script>
 
 <main>
@@ -46,7 +56,7 @@
   <section>
     <h2>Account</h2>
 
-    <!-- Username -->
+    <!-- ── Username ── -->
     {#if editingUsername}
       <form
         method="POST"
@@ -65,8 +75,8 @@
           autocomplete="off"
           spellcheck="false"
         />
-        {#if activeErrors.username}
-          <p role="alert">{activeErrors.username}</p>
+        {#if usernameErrors.username ?? serverErrors.username}
+          <p role="alert">{usernameErrors.username ?? serverErrors.username}</p>
         {/if}
 
         <button type="submit">Save</button>
@@ -78,13 +88,73 @@
         Username: <strong>{data.user.username}</strong>
         <a href="/{data.user.username}/settings?edit=username">Change username</a>
       </p>
-
       {#if $page.url.searchParams.get('renamed')}
         <p role="status">Username updated successfully.</p>
       {/if}
     {/if}
 
-    <!-- Email / guest upgrade -->
+    <!-- ── Email ── -->
+    {#if !data.user.isGuest}
+      {#if editingEmail && emailStep === 'verify'}
+        <p>Enter the 6-digit code sent to <strong>{verifyEmail}</strong>.</p>
+
+        <form method="POST" action="?/confirmEmailChange" novalidate use:enhance>
+          <input type="hidden" name="email" value={verifyEmail} />
+
+          <label for="email-code">Confirmation code</label>
+          <input
+            id="email-code"
+            type="text"
+            name="code"
+            inputmode="numeric"
+            maxlength="6"
+            autocomplete="one-time-code"
+          />
+          {#if serverErrors.code}
+            <p role="alert">{serverErrors.code}</p>
+          {/if}
+
+          <button type="submit">Confirm</button>
+          <a href="/{data.user.username}/settings">Cancel</a>
+        </form>
+
+      {:else if editingEmail}
+        <form
+          method="POST"
+          action="?/requestEmailChange"
+          novalidate
+          use:enhance
+          onsubmit={(e) => { if (!validateNewEmail()) e.preventDefault(); }}
+        >
+          <label for="new-email">New email address</label>
+          <input
+            id="new-email"
+            type="email"
+            name="email"
+            bind:value={newEmail}
+            oninput={validateNewEmail}
+            autocomplete="email"
+          />
+          {#if emailErrors.email ?? serverErrors.email}
+            <p role="alert">{emailErrors.email ?? serverErrors.email}</p>
+          {/if}
+
+          <button type="submit">Send confirmation code</button>
+          <a href="/{data.user.username}/settings">Cancel</a>
+        </form>
+
+      {:else}
+        <p>
+          Email: <strong>{data.user.email}</strong>
+          <a href="/{data.user.username}/settings?edit=email">Change email</a>
+        </p>
+        {#if $page.url.searchParams.get('email-changed')}
+          <p role="status">Email address updated successfully.</p>
+        {/if}
+      {/if}
+    {/if}
+
+    <!-- ── Guest upgrade ── -->
     {#if data.user.isGuest}
       <h3>Add an email address</h3>
       <p>Adding an email lets you sign in from other devices and keeps your data safe.</p>
@@ -98,17 +168,17 @@
         <form method="POST" action="?/confirmUpgrade" novalidate use:enhance>
           <input type="hidden" name="email" value={verifyEmail} />
 
-          <label for="code">Confirmation code</label>
+          <label for="upgrade-code">Confirmation code</label>
           <input
-            id="code"
+            id="upgrade-code"
             type="text"
             name="code"
             inputmode="numeric"
             maxlength="6"
             autocomplete="one-time-code"
           />
-          {#if activeErrors.code}
-            <p role="alert">{activeErrors.code}</p>
+          {#if serverErrors.code}
+            <p role="alert">{serverErrors.code}</p>
           {/if}
 
           <button type="submit">Confirm</button>
@@ -120,27 +190,24 @@
           action="?/requestUpgrade"
           novalidate
           use:enhance
-          onsubmit={(e) => { if (!validateEmail()) e.preventDefault(); }}
+          onsubmit={(e) => { if (!validateUpgradeEmail()) e.preventDefault(); }}
         >
-          <label for="email">Email address</label>
+          <label for="upgrade-email">Email address</label>
           <input
-            id="email"
+            id="upgrade-email"
             type="email"
             name="email"
-            bind:value={email}
-            oninput={validateEmail}
+            bind:value={upgradeEmail}
+            oninput={validateUpgradeEmail}
             autocomplete="email"
           />
-          {#if activeErrors.email}
-            <p role="alert">{activeErrors.email}</p>
+          {#if upgradeErrors.email ?? serverErrors.email}
+            <p role="alert">{upgradeErrors.email ?? serverErrors.email}</p>
           {/if}
 
           <button type="submit">Send confirmation code</button>
         </form>
       {/if}
-
-    {:else}
-      <p>Email: <strong>{data.user.email}</strong></p>
     {/if}
   </section>
 

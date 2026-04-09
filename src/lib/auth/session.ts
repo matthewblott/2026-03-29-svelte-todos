@@ -110,3 +110,9 @@ export async function upgradeGuestAccount(
 export async function deleteSession(token: string): Promise<void> {
   await sharedDb.delete(sessions).where(eq(sessions.token, token));
 }
+
+export async function changeUserEmail(userId: number, email: string): Promise<void> {
+  await sharedDb.update(users)
+    .set({ email })
+    .where(eq(users.id, userId));
+}

@@ -22,11 +22,12 @@ export const sessions = sqliteTable('sessions', {
 export const otpRequests = sqliteTable('otp_requests', {
   id:        integer('id').primaryKey({ autoIncrement: true }),
   email:     text('email').notNull(),
-  type:      text('type', { enum: ['login', 'register', 'upgrade'] }).notNull().default('login'),
+  type:      text('type', { enum: ['login', 'register', 'upgrade', 'change-email'] }).notNull().default('login'),
   codeHash:  text('code_hash').notNull(),
   expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
+
 export const jobs = sqliteTable('jobs', {
   id:        integer('id').primaryKey({ autoIncrement: true }),
   type:      text('type').notNull(),
