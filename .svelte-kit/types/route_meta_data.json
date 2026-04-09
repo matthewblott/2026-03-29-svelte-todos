@@ -37,5 +37,15 @@
 		"src/routes/(app)/[tenant=username]/todos/+page.server.ts",
 		"src/routes/(app)/[tenant=username]/+layout.server.ts",
 		"src/routes/+layout.server.ts"
+	],
+	"/(app)/[tenant=username]/todos/new": [
+		"src/routes/(app)/[tenant=username]/todos/new/+page.server.ts",
+		"src/routes/(app)/[tenant=username]/+layout.server.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/(app)/[tenant=username]/todos/[id]": [
+		"src/routes/(app)/[tenant=username]/todos/[id]/+page.server.ts",
+		"src/routes/(app)/[tenant=username]/+layout.server.ts",
+		"src/routes/+layout.server.ts"
 	]
 }

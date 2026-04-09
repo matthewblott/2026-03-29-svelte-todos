@@ -29,25 +29,29 @@ declare module "$app/types" {
 	type MatcherParam<M> = M extends (param : string) => param is (infer U extends string) ? U : string;
 
 	export interface AppTypes {
-		RouteId(): "/(public)" | "/(app)" | "/" | "/(public)/auth" | "/(public)/auth/login" | "/(public)/auth/register" | "/(public)/auth/verify" | "/(app)/[tenant=username]" | "/(app)/[tenant=username]/settings" | "/(app)/[tenant=username]/todos";
+		RouteId(): "/(public)" | "/(app)" | "/" | "/(public)/auth" | "/(public)/auth/login" | "/(public)/auth/register" | "/(public)/auth/verify" | "/(app)/[tenant=username]" | "/(app)/[tenant=username]/settings" | "/(app)/[tenant=username]/todos" | "/(app)/[tenant=username]/todos/new" | "/(app)/[tenant=username]/todos/[id]";
 		RouteParams(): {
 			"/(app)/[tenant=username]": { tenant: MatcherParam<typeof import('../src/params/username.js').match> };
 			"/(app)/[tenant=username]/settings": { tenant: MatcherParam<typeof import('../src/params/username.js').match> };
-			"/(app)/[tenant=username]/todos": { tenant: MatcherParam<typeof import('../src/params/username.js').match> }
+			"/(app)/[tenant=username]/todos": { tenant: MatcherParam<typeof import('../src/params/username.js').match> };
+			"/(app)/[tenant=username]/todos/new": { tenant: MatcherParam<typeof import('../src/params/username.js').match> };
+			"/(app)/[tenant=username]/todos/[id]": { tenant: MatcherParam<typeof import('../src/params/username.js').match>; id: string }
 		};
 		LayoutParams(): {
 			"/(public)": Record<string, never>;
-			"/(app)": { tenant?: MatcherParam<typeof import('../src/params/username.js').match> };
-			"/": { tenant?: MatcherParam<typeof import('../src/params/username.js').match> };
+			"/(app)": { tenant?: MatcherParam<typeof import('../src/params/username.js').match>; id?: string };
+			"/": { tenant?: MatcherParam<typeof import('../src/params/username.js').match>; id?: string };
 			"/(public)/auth": Record<string, never>;
 			"/(public)/auth/login": Record<string, never>;
 			"/(public)/auth/register": Record<string, never>;
 			"/(public)/auth/verify": Record<string, never>;
-			"/(app)/[tenant=username]": { tenant: MatcherParam<typeof import('../src/params/username.js').match> };
+			"/(app)/[tenant=username]": { tenant: MatcherParam<typeof import('../src/params/username.js').match>; id?: string };
 			"/(app)/[tenant=username]/settings": { tenant: MatcherParam<typeof import('../src/params/username.js').match> };
-			"/(app)/[tenant=username]/todos": { tenant: MatcherParam<typeof import('../src/params/username.js').match> }
+			"/(app)/[tenant=username]/todos": { tenant: MatcherParam<typeof import('../src/params/username.js').match>; id?: string };
+			"/(app)/[tenant=username]/todos/new": { tenant: MatcherParam<typeof import('../src/params/username.js').match> };
+			"/(app)/[tenant=username]/todos/[id]": { tenant: MatcherParam<typeof import('../src/params/username.js').match>; id: string }
 		};
-		Pathname(): "/" | "/auth/login" | "/auth/register" | "/auth/verify" | `/${string}/settings` & {} | `/${string}/todos` & {};
+		Pathname(): "/" | "/auth/login" | "/auth/register" | "/auth/verify" | `/${string}/settings` & {} | `/${string}/todos` & {} | `/${string}/todos/new` & {} | `/${string}/todos/${string}` & {};
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): "/robots.txt" | string & {};
 	}

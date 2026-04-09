@@ -1,79 +1,30 @@
 <script lang="ts">
-  import { enhance } from '$app/forms';
-  import { safeParse } from 'valibot';
-  import { TodoSchema } from '$lib/schemas/todo';
-  import { flattenErrors } from '$lib/utils/validation';
-
-  let { data, form } = $props();
-
-  let title        = $state('');
-  let clientErrors = $state<Record<string, string>>({});
-  let errors       = $derived({ ...(form?.errors ?? {}), ...clientErrors });
-
-  function validate() {
-    const result = safeParse(TodoSchema, { title });
-    clientErrors = result.success ? {} : flattenErrors(result.issues);
-    return result.success;
-  }
+  let { data } = $props();
 </script>
 
 <header>
   <h1>Todos</h1>
-  {#if data.user?.isGuest}
-    <p>Guest account — <a href="/{data.user.username}/settings">create an account</a> to keep your data.</p>
-  {:else}
-    <p><a href="/{data.user.username}/settings">Settings</a></p>
-  {/if}
-  <form method="POST" action="?/logout" use:enhance>
-    <button type="submit">Sign out</button>
-  </form>
+  <nav>
+    <a href="/{data.user.username}/todos/new">New todo</a>
+    <a href="/{data.user.username}/settings">Settings</a>
+  </nav>
 </header>
 
 <main>
-  <section>
-    <h2>Add a todo</h2>
-    <form
-      method="POST"
-      action="?/create"
-      use:enhance
-      novalidate
-      onsubmit={(e) => { if (!validate()) e.preventDefault(); }}
-    >
-      <label for="title">Title</label>
-      <input id="title" type="text" name="title" bind:value={title} oninput={validate} />
-      {#if errors.title}
-        <p role="alert">{errors.title}</p>
-      {/if}
-      <button type="submit">Add</button>
-    </form>
-  </section>
-
-  <section>
-    <h2>Your todos</h2>
-    {#if data.todos.length === 0}
-      <p>No todos yet.</p>
-    {:else}
-      <ul>
-        {#each data.todos as todo (todo.id)}
-          <li>
-            <form method="POST" action="?/toggle" use:enhance>
-              <input type="hidden" name="id" value={todo.id} />
-              <button type="submit" aria-label={todo.completed ? 'Mark incomplete' : 'Mark complete'}>
-                {todo.completed ? '✓' : '○'}
-              </button>
-            </form>
-
-            <span style={todo.completed ? 'text-decoration: line-through' : ''}>
-              {todo.title}
+  {#if data.todos.length === 0}
+    <p>No todos yet. <a href="/{data.user.username}/todos/new">Create one</a>.</p>
+  {:else}
+    <ul>
+      {#each data.todos as todo (todo.id)}
+        <li>
+          <a href="/{data.user.username}/todos/{todo.id}">
+            <span aria-label={todo.completed ? 'Completed' : 'Incomplete'}>
+              {todo.completed ? '✓' : '○'}
             </span>
-
-            <form method="POST" action="?/delete" use:enhance>
-              <input type="hidden" name="id" value={todo.id} />
-              <button type="submit" aria-label="Delete">×</button>
-            </form>
-          </li>
-        {/each}
-      </ul>
-    {/if}
-  </section>
+            {todo.title}
+          </a>
+        </li>
+      {/each}
+    </ul>
+  {/if}
 </main>
