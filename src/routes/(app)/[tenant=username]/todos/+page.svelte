@@ -21,6 +21,8 @@
   <h1>Todos</h1>
   {#if data.user?.isGuest}
     <p>Guest account — <a href="/{data.user.username}/settings">create an account</a> to keep your data.</p>
+  {:else}
+    <p><a href="/{data.user.username}/settings">Settings</a></p>
   {/if}
   <form method="POST" action="?/logout" use:enhance>
     <button type="submit">Sign out</button>
