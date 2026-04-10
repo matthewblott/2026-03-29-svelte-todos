@@ -4,24 +4,33 @@
 
 <header>
   <h1>Todos</h1>
-  <nav>
-    <a href="/{data.user.username}/todos/new">New todo</a>
-    <a href="/{data.user.username}/settings">Settings</a>
-  </nav>
+  {#if !data.isNative}
+    <nav>
+      <a href="/{data.user.username}/todos/new">New todo</a>
+    </nav>
+  {/if}
 </header>
 
 <main>
   {#if data.todos.length === 0}
     <p>No todos yet. <a href="/{data.user.username}/todos/new">Create one</a>.</p>
   {:else}
-    <ul>
+    <ul id="todos">
       {#each data.todos as todo (todo.id)}
-        <li>
-          <a href="/{data.user.username}/todos/{todo.id}">
-            <span aria-label={todo.completed ? 'Completed' : 'Incomplete'}>
+        <li id="todo-{todo.id}">
+          <form method="POST" action="?/toggle" data-turbo-stream>
+            <input type="hidden" name="id" value={todo.id} />
+            <button
+              type="submit"
+              aria-label={todo.completed ? 'Mark incomplete' : 'Mark complete'}
+            >
               {todo.completed ? '✓' : '○'}
+            </button>
+          </form>
+          <a href="/{data.user.username}/todos/{todo.id}">
+            <span style={todo.completed ? 'text-decoration: line-through' : ''}>
+              {todo.title}
             </span>
-            {todo.title}
           </a>
         </li>
       {/each}

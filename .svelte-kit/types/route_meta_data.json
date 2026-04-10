@@ -24,6 +24,9 @@
 		"src/routes/(public)/+layout.server.ts",
 		"src/routes/+layout.server.ts"
 	],
+	"/turbo/path-configuration": [
+		"src/routes/turbo/path-configuration/+server.ts"
+	],
 	"/(app)/[tenant=username]": [
 		"src/routes/(app)/[tenant=username]/+layout.server.ts",
 		"src/routes/+layout.server.ts"

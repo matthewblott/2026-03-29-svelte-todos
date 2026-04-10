@@ -1,15 +1,18 @@
-// src/hooks.server.ts
 import type { Handle } from '@sveltejs/kit';
 import { sharedDb } from '$lib/db/shared';
 import { users, sessions } from '$lib/db/shared-schema';
 import { getUserDb } from '$lib/db/app';
 import { eq, and, gt } from 'drizzle-orm';
 import { startWorker } from '$lib/jobs/worker';
+import { detectNativePlatform } from '$lib/turbo/native';
 
 startWorker();
 
 export const handle: Handle = async ({ event, resolve }) => {
-  // Resolve tenant (username) from URL if present
+  const platform            = detectNativePlatform(event.request);
+  event.locals.nativePlatform = platform;
+  event.locals.isNative       = platform !== null;
+
   const username = event.params.tenant;
 
   if (username) {
@@ -20,7 +23,6 @@ export const handle: Handle = async ({ event, resolve }) => {
     event.locals.tenant = user;
   }
 
-  // Resolve session
   const token = event.cookies.get('session');
 
   if (token) {
