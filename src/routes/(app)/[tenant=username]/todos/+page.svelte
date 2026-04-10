@@ -18,7 +18,7 @@
     <ul id="todos">
       {#each data.todos as todo (todo.id)}
         <li id="todo-{todo.id}">
-          <form method="POST" action="?/toggle" data-turbo-stream>
+          <form method="POST" action="?/toggle">
             <input type="hidden" name="id" value={todo.id} />
             <button
               type="submit"
